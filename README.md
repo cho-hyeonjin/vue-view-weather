@@ -1,24 +1,2 @@
-# vue-view-weather
-
-## Project setup
-```
-yarn install
-```
-
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# 뷰뷰웨더🌦️
+<img src="https://github.com/cho-hyeonjin/vue-view-weather/assets/78816754/5d5348da-3ba1-4634-879c-474510aadb1d" width="30%"/>
