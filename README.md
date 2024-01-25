@@ -1,24 +1,17 @@
-# vue-view-weather
+# 뷰뷰웨더🌦️
 
-## Project setup
-```
-yarn install
-```
+<img src="https://github.com/cho-hyeonjin/vue-view-weather/assets/78816754/5d5348da-3ba1-4634-879c-474510aadb1d" width="30%"/>
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+---
 
-### Compiles and minifies for production
-```
-yarn build
-```
+### ⚙️ 프로젝트 셋업
 
-### Lints and fixes files
-```
-yarn lint
-```
+> `yarn` 또는 `yarn install`
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### 🧑🏻‍💻 개발 모드에서 실행
+
+> `yarn serve`
+
+### 🔗 배포 링크
+
+> []()
