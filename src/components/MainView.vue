@@ -70,6 +70,8 @@ export default {};
   height: 700px;
   border-radius: 50px;
   background: linear-gradient(#647eff, #42d392);
+  background: linear-gradient(#42d392, #647eff);
+  background: linear-gradient(#42d392, #ffffff);
   box-shadow: 5px 5px 10px gray;
 
   #cityNameBox {
@@ -118,7 +120,7 @@ export default {};
       .buttonBackground {
         width: 224px;
         height: 35px;
-        background-color: #2d4d65;
+        background-color: #35495e;
         border-radius: 10px;
         display: flex;
 
@@ -131,7 +133,9 @@ export default {};
           cursor: pointer;
 
           &.forecast {
-            background-color: #42d392;
+            // background-color: #647eff;
+            background-color: #42b883;
+            box-shadow: 0 0 10px white, 0 0 10px white;
             color: white;
           }
           &.airquality {
@@ -238,15 +242,16 @@ export default {};
         "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 
       p {
-        font-weight: 400;
+        font-weight: 500;
         font-size: 0.8rem;
-        color: white;
+        // color: white;
+        color: #35495e;
         text-align: center;
 
         &:last-child {
           font-weight: 400;
           font-size: 0.8rem;
-          color: #2d4d65;
+          color: #799ed0;
           cursor: pointer;
           margin-bottom: 2px;
         }
@@ -271,7 +276,7 @@ export default {};
         width: 126px;
         min-width: 126px;
         height: 70px;
-        background-color: #2d4d65e3;
+        background-color: #42b883;
         border-radius: 20px;
         margin-left: 15px;
 
@@ -340,13 +345,14 @@ export default {};
     padding: 0 50px;
 
     i {
-      color: rgb(255, 255, 255);
+      color: #35495e;
       font-size: 1.15rem;
       cursor: pointer;
       transition: all 0.2s ease;
 
       &:hover {
-        color: #799ed0;
+        color: #647eff;
+        color: #42b883;
       }
     }
   }
