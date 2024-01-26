@@ -2,8 +2,8 @@
   <div class="leftContainer">
     <div id="cityNameBox">
       <div class="cityName">
-        <p>서울</p>
-        <p>2024. 01.26. 금</p>
+        <p>성남시</p>
+        <p>2024. 01.27. 토</p>
       </div>
     </div>
     <div id="contentsBox">
@@ -22,8 +22,8 @@
         </div>
         <div class="weatherData">
           <div>
-            <p>상세 데이터 타이틀</p>
-            <p>상세 데이터 내용</p>
+            <!-- <p>상세 데이터 타이틀</p>
+            <p>상세 데이터 내용</p> -->
           </div>
         </div>
       </div>
@@ -42,7 +42,7 @@
             <p class="time">10시</p>
             <p class="currentDegree">-2&deg;</p>
             <div>
-              <img src="~/assets/images/humidity_2.png" alt="humidity_2" />
+              <img src="~/assets/images/drop_2.png" alt="drop_2" />
               <p class="fall">20%</p>
             </div>
           </div>
@@ -59,7 +59,30 @@
 </template>
 
 <script>
-export default {};
+import axios from "axios";
+import dayjs from "dayjs";
+
+export default {
+  data() {
+    return {
+      currentTime: dayjs().format("YYYY. MM. DD. ddd"),
+      currentTemp: "",
+    };
+  },
+  async created() {
+    // OpenWeather API
+    const API_KEY = "d871e7c1912d25a3ef6ea56cdb0ab074";
+    let initialLat = 37.3947;
+    let initialLon = 127.1112;
+
+    axios
+      .get(
+        `https://api.openweathermap.org/data/3.0/onecall?lat=${initialLat}&lon=${initialLon}&exclude=hourly,daily&appid=${API_KEY}`
+      )
+      .then((res) => console.log(res.data.current, res.data.current.weather))
+      .catch((err) => console.log("에러발생:", err));
+  },
+};
 </script>
 
 <style lang="scss" scoped>

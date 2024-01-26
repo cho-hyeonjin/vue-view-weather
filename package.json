@@ -44,8 +44,9 @@
   },
   "dependencies": {
     "@types/lodash-es": "^4.17.6",
-    "axios": "^0.27.2",
-    "dayjs": "^1.11.3",
+    "axios": "^1.6.7",
+    "dayjs": "^1.11.10",
+    "dotenv": "^16.4.1",
     "lodash-es": "^4.17.21",
     "vue": "^3.2.14",
     "vue-router": "4",
