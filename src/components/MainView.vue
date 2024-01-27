@@ -2,8 +2,8 @@
   <div class="leftContainer">
     <div id="cityNameBox">
       <div class="cityName">
-        <p>성남시</p>
-        <p>2024. 01.27. 토</p>
+        <p>{{ cityName }}</p>
+        <p>{{ currentTime }}</p>
       </div>
     </div>
     <div id="contentsBox">
@@ -15,15 +15,20 @@
       </div>
       <div class="weatherBox">
         <div class="weatherDegree">
-          <p>-2&deg;</p>
+          <p>{{ currentTemp }}&deg;</p>
         </div>
         <div class="weatherIcon">
-          <img src="~/assets/images/d_sunny.png" alt="d_sunny" />
+          <!-- icon 들은 v-bind 문법 써서 서버 weather code 데이터와 동적으로 매핑할 예정 -->
+          <img src="~/assets/icons/01d.svg" alt="01d" />
         </div>
         <div class="weatherData">
-          <div>
-            <!-- <p>상세 데이터 타이틀</p>
-            <p>상세 데이터 내용</p> -->
+          <div
+            v-for="temporary in temporaryData"
+            :key="temporary.title"
+            class="detailData"
+          >
+            <p>{{ temporary.title }}</p>
+            <p>{{ temporary.value }}</p>
           </div>
         </div>
       </div>
@@ -34,16 +39,18 @@
         <p>이번주 날씨 보기</p>
       </div>
       <div class="timelyWeatherBox">
-        <div class="timelyWeather">
-          <div class="icon">
-            <img src="~/assets/images/d_sunnycloudy.png" alt="d_sunnycloudy" />
-          </div>
+        <div
+          class="timelyWeather"
+          v-for="(hourlyData, idx) in hourlyDatas"
+          :key="idx"
+        >
+          <div class="icon"><img src=~/assets/icons/02d.svg alt="02d" /></div>
           <div class="data">
-            <p class="time">10시</p>
-            <p class="currentDegree">-2&deg;</p>
+            <p class="time">{{ changeTimeFormatt(hourlyData.dt) }}</p>
+            <p class="currentDegree">{{ Math.round(hourlyData.temp) }}&deg;</p>
             <div>
               <img src="~/assets/images/drop_2.png" alt="drop_2" />
-              <p class="fall">20%</p>
+              <p class="fall">{{ hourlyData.humidity }}%</p>
             </div>
           </div>
         </div>
@@ -61,25 +68,55 @@
 <script>
 import axios from "axios";
 import dayjs from "dayjs";
+import "dayjs/locale/ko";
+dayjs.locale("ko");
 
 export default {
   data() {
     return {
+      cityName: "",
       currentTime: dayjs().format("YYYY. MM. DD. ddd"),
       currentTemp: "",
+      hourlyDatas: [],
+      temporaryData: [
+        { title: "습도", value: "60%" },
+        { title: "풍속", value: "10m/s" },
+        { title: "체감 온도", value: "℃" },
+      ],
     };
   },
   async created() {
     // OpenWeather API
-    // const API_KEY = "d871e7c1912d25a3ef6ea56cdb0ab074";
-    // let initialLat = 37.3947;
-    // let initialLon = 127.1112;
-    // axios
-    //   .get(
-    //     `https://api.openweathermap.org/data/3.0/onecall?lat=${initialLat}&lon=${initialLon}&exclude=hourly,daily&appid=${API_KEY}`
-    //   )
-    //   .then((res) => console.log(res.data.current, res.data.current.weather))
-    //   .catch((err) => console.log("에러발생:", err));
+    const API_KEY = "d871e7c1912d25a3ef6ea56cdb0ab074";
+    let initialLat = 37.391801;
+    let initialLon = 127.111897833;
+    axios
+      .get(
+        `https://api.openweathermap.org/data/3.0/onecall?lat=${initialLat}&lon=${initialLon}&exclude=minutely&appid=${API_KEY}&units=metric`
+      )
+      .then((res) => {
+        this.cityName = res.data.timezone.split("/")[1]; // 대륙명 삭제
+        this.currentTemp = Math.round(res.data.current.temp);
+        this.temporaryData[0].value = res.data.current.humidity + "%"; // 현재 습도
+        this.temporaryData[1].value = res.data.current.wind_speed + "m/s"; // 현재 풍속
+        this.temporaryData[2].value =
+          Math.round(res.data.current.feels_like) + "℃"; // 현재 체감온도
+        for (let i = 0; i < 24; i++) {
+          this.hourlyDatas[i] = res.data.hourly[i];
+        }
+        console.log(this.hourlyDatas, "!!!!");
+      })
+      .catch((err) => console.log("😨에러발생:", err));
+  },
+  methods: {
+    // unixType 타임 변경 메서드
+    changeTimeFormatt(unixtime) {
+      const millisec = unixtime * 1000;
+      let date = new Date(millisec);
+      let hour = "" + date.getHours();
+      const formatted = hour.substring(-2).padStart(2, "0");
+      return formatted + " 시";
+    },
   },
 };
 </script>
@@ -117,12 +154,13 @@ export default {
           width: 241px;
           height: 33px;
           font-size: 1.35rem;
+          font-weight: 400;
         }
         &:last-child {
           width: 160px;
           height: 19px;
           font-size: 0.9rem;
-          font-weight: 100;
+          font-weight: 300;
         }
       }
     }
@@ -173,6 +211,7 @@ export default {
         @include center;
         width: 100%;
         height: 15%;
+        margin: 0.5rem 0;
 
         p {
           font-size: 3.5rem;
@@ -188,7 +227,7 @@ export default {
       .weatherIcon {
         @include center;
         width: 100%;
-        height: 60%;
+        height: 50%;
 
         img {
           height: 160px;
@@ -203,7 +242,6 @@ export default {
           @include c-center;
           width: 33.33%;
           height: 100%;
-          // 레이아웃이 3개이기 때문에 동일한 레이아웃을 반복시킴을 알 수 있다.
           &:nth-child(1) {
             margin-left: 10px;
           }
@@ -220,7 +258,7 @@ export default {
 
             &:first-child {
               font-size: 1rem;
-              font-weight: 300;
+              font-weight: 400;
               // font-family: "Noto Sans KR", sans-serif;
               font-family: "Pretendard Variable", Pretendard, -apple-system,
                 BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue",
@@ -230,8 +268,10 @@ export default {
               color: #799ed0;
             }
             &:last-child {
+              // color: #799ed0;
+              color: #4b6786;
               font-size: 1rem;
-              font-weight: 200;
+              font-weight: 300;
               // font-family: "Poppins", sans-serif;
               font-family: "Pretendard Variable", Pretendard, -apple-system,
                 BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue",
@@ -261,18 +301,30 @@ export default {
         "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 
       p {
-        font-weight: 500;
+        font-weight: 600;
         font-size: 0.8rem;
-        // color: white;
-        color: #35495e;
+        color: #4b6786;
         text-align: center;
+        padding: 0.3rem;
+        cursor: pointer;
+
+        &:first-child {
+          border-radius: 0.4rem;
+          background: white;
+          box-shadow: 0 0 15px white, 0 0 15px white, 0 0 15px white;
+        }
 
         &:last-child {
           font-weight: 400;
           font-size: 0.8rem;
           color: #799ed0;
-          cursor: pointer;
           margin-bottom: 2px;
+        }
+
+        &:hover {
+          color: #4b6786;
+          font-weight: 600;
+          transition: all 0.3s;
         }
       }
     }
@@ -335,7 +387,7 @@ export default {
 
             &.currentDegree {
               font-size: 1.2rem;
-              margin-top: 7.5px;
+              margin-top: 0.2rem;
             }
           }
 
