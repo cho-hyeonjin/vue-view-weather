@@ -10,7 +10,7 @@
       <div class="buttonBox">
         <div class="buttonBackground">
           <button class="forecast">일기예보</button>
-          <button class="airquality">대기질</button>
+          <button class="forecastDetail">상세 날씨</button>
         </div>
       </div>
       <div class="weatherBox">
@@ -71,16 +71,15 @@ export default {
   },
   async created() {
     // OpenWeather API
-    const API_KEY = "d871e7c1912d25a3ef6ea56cdb0ab074";
-    let initialLat = 37.3947;
-    let initialLon = 127.1112;
-
-    axios
-      .get(
-        `https://api.openweathermap.org/data/3.0/onecall?lat=${initialLat}&lon=${initialLon}&exclude=hourly,daily&appid=${API_KEY}`
-      )
-      .then((res) => console.log(res.data.current, res.data.current.weather))
-      .catch((err) => console.log("에러발생:", err));
+    // const API_KEY = "d871e7c1912d25a3ef6ea56cdb0ab074";
+    // let initialLat = 37.3947;
+    // let initialLon = 127.1112;
+    // axios
+    //   .get(
+    //     `https://api.openweathermap.org/data/3.0/onecall?lat=${initialLat}&lon=${initialLon}&exclude=hourly,daily&appid=${API_KEY}`
+    //   )
+    //   .then((res) => console.log(res.data.current, res.data.current.weather))
+    //   .catch((err) => console.log("에러발생:", err));
   },
 };
 </script>
@@ -92,8 +91,6 @@ export default {
   min-width: 324px;
   height: 700px;
   border-radius: 50px;
-  background: linear-gradient(#647eff, #42d392);
-  background: linear-gradient(#42d392, #647eff);
   background: linear-gradient(#42d392, #ffffff);
   box-shadow: 5px 5px 10px gray;
 
@@ -156,12 +153,11 @@ export default {
           cursor: pointer;
 
           &.forecast {
-            // background-color: #647eff;
-            background-color: #42b883;
+            background: #42b883;
             box-shadow: 0 0 10px white, 0 0 10px white;
             color: white;
           }
-          &.airquality {
+          &.forecastDetail {
             background: transparent;
             color: #467599;
           }
@@ -374,7 +370,6 @@ export default {
       transition: all 0.2s ease;
 
       &:hover {
-        color: #647eff;
         color: #42b883;
       }
     }
