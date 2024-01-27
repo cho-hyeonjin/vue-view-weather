@@ -24,6 +24,23 @@ module.exports = {
         use: ["vue-loader"],
       },
       {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: ["babel-loader"],
+      },
+      {
+        test: /\.svg$/,
+        oneOf: [
+          {
+            resourceQuery: /inline/, // SVG를 인라인으로 처리하려면 ?inline을 사용
+            use: "vue-svg-loader",
+          },
+          {
+            use: ["file-loader"],
+          },
+        ],
+      },
+      {
         test: /\.s?css$/,
         use: [
           "vue-style-loader",
@@ -32,11 +49,6 @@ module.exports = {
           "postcss-loader",
           "sass-loader",
         ],
-      },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: ["babel-loader"],
       },
       {
         test: /\.(png|jpe?g|gif|webp)$/,
