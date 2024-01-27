@@ -321,7 +321,7 @@ export default {
         &:first-child {
           border-radius: 0.4rem;
           background: white;
-          box-shadow: 0 0 15px white, 0 0 15px white, 0 0 15px white;
+          box-shadow: 0 0 15px white, 0 0 15px white;
         }
 
         &:last-child {
