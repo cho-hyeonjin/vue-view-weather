@@ -19,7 +19,8 @@
         </div>
         <div class="weatherIcon">
           <!-- icon 들은 v-bind 문법 써서 서버 weather code 데이터와 동적으로 매핑할 예정 -->
-          <img src="~/assets/icons/01d.svg" alt="01d" />
+          <!-- <img src="~/assets/icons/50n.svg" alt="weatherIcon" /> -->
+          <img :src="currentWeatherIconSrc" alt="weatherIcon" />
         </div>
         <div class="weatherData">
           <div
@@ -44,13 +45,16 @@
           v-for="(hourlyData, idx) in hourlyDatas"
           :key="idx"
         >
-          <div class="icon"><img src=~/assets/icons/02d.svg alt="02d" /></div>
+          <!-- <div class="icon"><img src=/icons/02d.svg alt="02d" /></div> -->
+          <div class="icon">
+            <img :src="hourlyWeatherIconSrcs[idx]" alt="hourlyWeatherIcon" />
+          </div>
           <div class="data">
             <p class="time">{{ changeTimeFormatt(hourlyData.dt) }}</p>
             <p class="currentDegree">{{ Math.round(hourlyData.temp) }}&deg;</p>
             <div>
-              <img src="~/assets/images/drop_2.png" alt="drop_2" />
-              <p class="fall">{{ hourlyData.humidity }}%</p>
+              <img src="~/assets/images/drop.png" alt="drop" />
+              <p class="drop">{{ hourlyData.humidity }}%</p>
             </div>
           </div>
         </div>
@@ -78,11 +82,13 @@ export default {
       currentTime: dayjs().format("YYYY. MM. DD. ddd"),
       currentTemp: "",
       hourlyDatas: [],
+      hourlyWeatherIconSrcs: [],
       temporaryData: [
         { title: "습도", value: "60%" },
         { title: "풍속", value: "10m/s" },
         { title: "체감 온도", value: "℃" },
       ],
+      currentWeatherIconSrc: "",
     };
   },
   async created() {
@@ -101,10 +107,15 @@ export default {
         this.temporaryData[1].value = res.data.current.wind_speed + "m/s"; // 현재 풍속
         this.temporaryData[2].value =
           Math.round(res.data.current.feels_like) + "℃"; // 현재 체감온도
+
+        // 데이터 바인딩을 위한 openWeather API Response 데이터 파싱
         for (let i = 0; i < 24; i++) {
           this.hourlyDatas[i] = res.data.hourly[i];
+          this.hourlyWeatherIconSrcs[
+            i
+          ] = `/icons/${res.data.hourly[i].weather[0].icon}.svg`;
         }
-        console.log(this.hourlyDatas, "!!!!");
+        this.currentWeatherIconSrc = `/icons/${res.data.current.weather[0].icon}.svg`;
       })
       .catch((err) => console.log("😨에러발생:", err));
   },
@@ -142,7 +153,6 @@ export default {
 
       p {
         color: white;
-        // font-family: "Poppins", sans-serif;
         font-family: "Pretendard Variable", Pretendard, -apple-system,
           BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI",
           "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic",
@@ -350,6 +360,7 @@ export default {
         background-color: #42b883;
         border-radius: 20px;
         margin-left: 15px;
+        padding: 0 2px;
 
         &:first-child {
           margin-left: 0;
@@ -380,7 +391,7 @@ export default {
             text-align: center;
 
             &.time {
-              font-size: 0.8rem;
+              font-size: 0.9rem;
               font-weight: 200;
               margin-top: 7.5px;
             }
@@ -397,9 +408,10 @@ export default {
             height: 33.33%;
 
             img {
-              height: 55%;
+              height: 60%;
+              margin-right: 0.2rem;
             }
-            .fall {
+            .drop {
               font-size: 0.9rem;
               margin-top: 1.5px;
             }
