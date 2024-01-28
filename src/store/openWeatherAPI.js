@@ -6,8 +6,8 @@ export default {
 
   state: {
     position: {
-      lat: 37.391801,
-      lon: 127.111897833,
+      lat: 36.73035,
+      lon: 127.967487,
     },
     cityName: "Seoul",
     currentWeather: {
