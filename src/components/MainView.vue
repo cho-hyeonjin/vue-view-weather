@@ -18,7 +18,7 @@
           <p>{{ currentTemp }}&deg;</p>
         </div>
         <div class="weatherIcon">
-          <img :src="currentWeatherIconCode" alt="weatherIcon" />
+          <img :src="currentWeatherIconCodeSrc" alt="weatherIcon" />
         </div>
         <div class="weatherData">
           <div
@@ -43,7 +43,6 @@
           v-for="(hourlyData, idx) in hourlyDatas"
           :key="idx"
         >
-          <!-- <div class="icon"><img src=/icons/02d.svg alt="02d" /></div> -->
           <div class="icon">
             <img :src="hourlyWeatherIconSrcs[idx]" alt="hourlyWeatherIcon" />
           </div>
@@ -85,7 +84,7 @@ export default {
         { title: "풍속", value: "10m/s" },
         { title: "체감 온도", value: "℃" },
       ],
-      currentWeatherIconSrc: "",
+      currentWeatherIconCodeSrc: "",
     };
   },
   async created() {
@@ -95,16 +94,16 @@ export default {
       currentHumidity,
       currentWindSpeed,
       currentFeelsLike,
-      currentWeatherIconCode,
+      currentWeatherIconCodeSrc,
     } = this.$store.state.openWeatherAPI.currentWeather;
 
-    this.currentTemp = currentTemp; // 현재시간에 대한 현재온도
-    this.temporaryData[0].value = currentHumidity + "%"; // 현재시간에 대한 습도
-    this.temporaryData[1].value = currentWindSpeed + "m/s"; // 현재시간에 대한 풍속
-    this.temporaryData[2].value = Math.round(currentFeelsLike) + "도"; // 현재시간에 대한 체감온도
+    this.currentTemp = currentTemp; // 현재 온도
+    this.temporaryData[0].value = currentHumidity + "%"; // 현재 습도
+    this.temporaryData[1].value = currentWindSpeed + "m/s"; // 현재 풍속
+    this.temporaryData[2].value = Math.round(currentFeelsLike) + "도"; // 현재 체감 온도
     this.arrayTemps = this.$store.state.openWeatherAPI.hourlyWeather;
     this.images = this.$store.state.openWeatherAPI.imagePath;
-    this.currentWeatherIconCode = currentWeatherIconCode;
+    this.currentWeatherIconCodeSrc = currentWeatherIconCodeSrc; // 현재 날씨 아이콘 route
   },
 
   computed: {
@@ -117,12 +116,11 @@ export default {
       const { currentTemp } = this.$store.state.openWeatherAPI.currentWeather;
       return currentTemp;
     },
-    // ! 현재 날씨 아이콘
-    currentWeatherIconCode() {
-      const { currentWeatherIconCode } =
+    // 현재 날씨 아이콘
+    currentWeatherIconCodeSrc() {
+      const { currentWeatherIconCodeSrc } =
         this.$store.state.openWeatherAPI.currentWeather;
-      console.log(currentWeatherIconCode, "!!!!!!!");
-      return currentWeatherIconCode;
+      return currentWeatherIconCodeSrc;
     },
     arrayTemps() {
       return this.$store.state.openWeatherAPI.hourlyWeather;
