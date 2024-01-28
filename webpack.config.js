@@ -9,6 +9,7 @@ module.exports = {
     alias: {
       "~": path.resolve(__dirname, "src"),
       assets: path.resolve(__dirname, "src/assets"),
+      icons: path.resolve(__dirname, "public/icons"),
     },
   },
   entry: "./src/main.js",
