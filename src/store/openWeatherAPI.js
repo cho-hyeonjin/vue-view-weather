@@ -18,7 +18,7 @@ export default {
       currentSunrise: 0,
       currentSunset: 0,
       currentVisibility: 0,
-      currentWeatherIconCode: "",
+      currentWeatherIconCodeSrc: "",
     },
     hourlyWeather: [],
     images: [],
@@ -42,10 +42,10 @@ export default {
       state.currentWeather.currentSunrise = payload.sunrise; // 일출시간
       state.currentWeather.currentSunset = payload.sunset; // 일몰시간
       state.currentWeather.currentVisibility = payload.visibility; // 가시거리
-      // state.currentWeather.currentWeatherIconCode = payload.weather[0].icon; // 날씨 아이콘 코드
+      // state.currentWeather.currentWeatherIconCodeSrc = payload.weather[0].icon; // 날씨 아이콘 코드
       // `/icons/${res.data.current.weather[0].icon}.svg`
       // `/icons/${payload.weather[0].icon}.svg`
-      state.currentWeather.currentWeatherIconCode = `/icons/${payload.weather[0].icon}.svg`; // 날씨 아이콘 코드
+      state.currentWeather.currentWeatherIconCodeSrc = `/icons/${payload.weather[0].icon}.svg`; // 날씨 아이콘 코드
     },
     SET_TIMELY_WEATHER(state, payload) {
       state.hourlyWeather = payload;
