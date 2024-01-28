@@ -50,12 +50,12 @@
 </template>
 
 <script>
-import Map from "./Map.vue";
-import { ref } from "vue";
-import axios from "axios";
+import Map from "~/components/Map.vue";
+import { computed, onMounted, ref, watchEffect } from "vue";
+import { useStore } from "vuex";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
-dayjs.locale("ko");
+dayjs.locale("ko"); // global로 한국어 locale 사용
 
 export default {
   components: {
@@ -63,10 +63,12 @@ export default {
   },
 
   setup() {
-    let currentTime = dayjs().format("YYYY. MM. DD. ddd");
-    let cityName = ref("");
-    let feeling = ref(""); // 체감온도
-    let subWeatherDatas = ref([]);
+    // 화면에서 보여질 데이터
+    let currentTime = dayjs().format("YYYY. MM. DD. ddd"); // 현재 시간
+
+    let cityName = ref(""); // 도시 이름
+    let feeling = ref(""); // 현재 온도에 대한 체감을 나타내는 데이터
+    let subWeatherDatas = ref([]); // 상세 날씨 데이터
 
     // unixType 타임 변경 메서드
     const changeTimeFormatt = (unixtime) => {
@@ -77,68 +79,92 @@ export default {
       return formatted + " 시";
     };
 
-    // OpenWeather API
+    // OpenWeatherAPI 호출 함수
+    const store = useStore();
     const fetchOpenWeatherAPI = async () => {
-      const API_KEY = "d871e7c1912d25a3ef6ea56cdb0ab074";
-      let initialLat = 37.391801;
-      let initialLon = 127.111897833;
-
+      // API 호출을 위한 필수 데이터
       try {
-        const res = await axios.get(
-          `https://api.openweathermap.org/data/3.0/onecall?lat=${initialLat}&lon=${initialLon}&exclude=minutely&appid=${API_KEY}&units=metric`
-        );
+        await store.dispatch("openWeatherAPI/FETCH_OPENWEATHER_API");
+        const {
+          currentFeelsLike,
+          currentSunrise,
+          currentSunset,
+          currentVisibility,
+        } = store.state.openWeatherAPI.currentWeather;
 
-        let isInitialData = res.data.current;
-        let isInitialCityName = res.data.timezone;
-        let isFeelLikeTemp = isInitialData.feels_like; // 체감온도
-        let isTimeOfSunrise = isInitialData.sunrise;
-        let isTimeOfSunset = isInitialData.sunset;
-        let isLineOfSight = isInitialData.visibility; // 가시거리
+        let isInitialCityName = store.state.openWeatherAPI.cityName; // 초기 도시이름 데이터
+        let isFeelLikeTemp = computed(() => {
+          return currentFeelsLike;
+        }); // 초기 체감온도 데이터
+        let isTimeOfSunrise = computed(() => {
+          return currentSunrise;
+        }); // 일출시간 데이터
+        let isTimeOfSunSet = computed(() => {
+          return currentSunset;
+        }); // 일몰시간 데이터
+        let isLineOfSight = computed(() => {
+          return currentVisibility;
+        }); // 가시거리 데이터
 
-        // response 데이터의 체감온도 넘버 값에 따라 UI에 문자열 데이터로 바꿔서 보여주기 위한 로직
-        const tempPoints = [0, 10, 15, 20, 25, 30];
-        const lavels = [
-          "매우 더움",
-          "더움",
-          "보통",
-          "시원함",
-          "약간 추움",
-          "추움",
+        // 기준점에 따른 Array를 하나 만들고
+        // 기준에 따른 메시지에 따른 Array를 하나 만들어서
+        // 체감온도 데이터가 탐색을 해서
+        // 원하는 값을 뽑는 로직으로 구성
+
+        const pivots = [0, 10, 15, 20, 25, 30];
+        const labels = [
           "매우 추움",
+          "추움",
+          "쌀쌀함",
+          "선선함",
+          "보통",
+          "더움",
+          "매우 더움",
         ];
 
-        let idx = 0;
-
-        for (const point of tempPoints) {
-          if (isFeelLikeTemp <= point) break;
-          idx++;
+        let index = 0;
+        for (const p of pivots) {
+          if (isFeelLikeTemp.value <= p) break;
+          index++;
         }
-        feeling.value = lavels[idx];
+        feeling.value = labels[index];
 
-        // reponse 데이터 중 상세 날씨 데이터로 보여줄 값을 v-for 문에서 사용하기 쉽게 변환
+        // 가공한 데이터를 가지고 새로운 배열 생성
         let isProcessedData = [
-          { name: "일출시간", value: changeTimeFormatt(isTimeOfSunrise) },
-          { name: "일몰시간", value: changeTimeFormatt(isTimeOfSunset) },
+          { name: "일출시간", value: changeTimeFormatt(isTimeOfSunrise.value) },
+          {
+            name: "일몰시간",
+            value: changeTimeFormatt(isTimeOfSunSet.value),
+          },
           {
             name: "가시거리",
             value:
-              String(isLineOfSight).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "M",
+              isLineOfSight.value
+                .toString()
+                .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",") + "M",
           },
         ];
 
-        // 상단 헤더 도시명, 날짜 데이터
-        cityName.value = isInitialCityName.split("/")[1]; // composition api 방식 = data에 선언해둔 변수명.value 로 접근
+        // Composition API에서 AJAX요청과 데이터 변경을 하려면 데이터.value로 접근해야한다.
+        cityName.value = isInitialCityName;
         subWeatherDatas.value = isProcessedData;
-      } catch (err) {
-        console.log("😨 에러 발생", err);
+      } catch (error) {
+        console.log(error);
+        // alert('API가 제대로 호출되지 않았습니다.');
       }
     };
 
-    fetchOpenWeatherAPI();
+    watchEffect(async () => {
+      await fetchOpenWeatherAPI();
+    });
+
+    onMounted(() => {
+      fetchOpenWeatherAPI();
+    });
 
     return {
-      currentTime,
       cityName,
+      currentTime,
       feeling,
       subWeatherDatas,
     };
