@@ -18,9 +18,7 @@
           <p>{{ currentTemp }}&deg;</p>
         </div>
         <div class="weatherIcon">
-          <!-- icon 들은 v-bind 문법 써서 서버 weather code 데이터와 동적으로 매핑할 예정 -->
-          <!-- <img src="~/assets/icons/50n.svg" alt="weatherIcon" /> -->
-          <img :src="currentWeatherIconSrc" alt="weatherIcon" />
+          <img :src="currentWeatherIconCode" alt="weatherIcon" />
         </div>
         <div class="weatherData">
           <div
@@ -70,7 +68,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 dayjs.locale("ko");
@@ -92,41 +89,67 @@ export default {
     };
   },
   async created() {
-    // OpenWeather API
-    const API_KEY = "d871e7c1912d25a3ef6ea56cdb0ab074";
-    let initialLat = 37.391801;
-    let initialLon = 127.111897833;
-    axios
-      .get(
-        `https://api.openweathermap.org/data/3.0/onecall?lat=${initialLat}&lon=${initialLon}&exclude=minutely&appid=${API_KEY}&units=metric`
-      )
-      .then((res) => {
-        this.cityName = res.data.timezone.split("/")[1]; // 대륙명 삭제
-        this.currentTemp = Math.round(res.data.current.temp);
-        this.temporaryData[0].value = res.data.current.humidity + "%"; // 현재 습도
-        this.temporaryData[1].value = res.data.current.wind_speed + "m/s"; // 현재 풍속
-        this.temporaryData[2].value =
-          Math.round(res.data.current.feels_like) + "℃"; // 현재 체감온도
+    await this.$store.dispatch("openWeatherAPI/FETCH_OPENWEATHER_API");
+    const {
+      currentTemp,
+      currentHumidity,
+      currentWindSpeed,
+      currentFeelsLike,
+      currentWeatherIconCode,
+    } = this.$store.state.openWeatherAPI.currentWeather;
 
-        // 데이터 바인딩을 위한 openWeather API Response 데이터 파싱
-        for (let i = 0; i < 24; i++) {
-          this.hourlyDatas[i] = res.data.hourly[i];
-          this.hourlyWeatherIconSrcs[
-            i
-          ] = `/icons/${res.data.hourly[i].weather[0].icon}.svg`;
-        }
-        this.currentWeatherIconSrc = `/icons/${res.data.current.weather[0].icon}.svg`;
-      })
-      .catch((err) => console.log("😨에러발생:", err));
+    this.currentTemp = currentTemp; // 현재시간에 대한 현재온도
+    this.temporaryData[0].value = currentHumidity + "%"; // 현재시간에 대한 습도
+    this.temporaryData[1].value = currentWindSpeed + "m/s"; // 현재시간에 대한 풍속
+    this.temporaryData[2].value = Math.round(currentFeelsLike) + "도"; // 현재시간에 대한 체감온도
+    this.arrayTemps = this.$store.state.openWeatherAPI.hourlyWeather;
+    this.images = this.$store.state.openWeatherAPI.imagePath;
+    this.currentWeatherIconCode = currentWeatherIconCode;
   },
-  methods: {
-    // unixType 타임 변경 메서드
-    changeTimeFormatt(unixtime) {
-      const millisec = unixtime * 1000;
-      let date = new Date(millisec);
-      let hour = "" + date.getHours();
-      const formatted = hour.substring(-2).padStart(2, "0");
-      return formatted + " 시";
+
+  computed: {
+    // 마커를 선택했을 때, 레이아웃에 보여지는 도시 이름
+    cityName() {
+      return this.$store.state.openWeatherAPI.cityName;
+    },
+    // 현재 시간에 따른 현재 온도 데이터
+    currentTemp() {
+      const { currentTemp } = this.$store.state.openWeatherAPI.currentWeather;
+      return currentTemp;
+    },
+    // ! 현재 날씨 아이콘
+    currentWeatherIconCode() {
+      const { currentWeatherIconCode } =
+        this.$store.state.openWeatherAPI.currentWeather;
+      console.log(currentWeatherIconCode, "!!!!!!!");
+      return currentWeatherIconCode;
+    },
+    arrayTemps() {
+      return this.$store.state.openWeatherAPI.hourlyWeather;
+    },
+    // 상세 날씨 데이터를 받아주는 데이터 할당
+    temporaryData() {
+      const { currentHumidity, currentWindSpeed, currentFeelsLike } =
+        this.$store.state.openWeatherAPI.currentWeather;
+      return [
+        {
+          title: "습도",
+          value: currentHumidity + "%",
+        },
+        {
+          title: "풍속",
+          value: currentWindSpeed + "m/s",
+        },
+        {
+          title: "체감온도",
+          value: Math.round(currentFeelsLike) + "도",
+        },
+      ];
+    },
+
+    // 시간별 날씨 데이터에 대한 아이콘 이미지
+    images() {
+      return this.$store.state.openWeatherAPI.images;
     },
   },
 };
