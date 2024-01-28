@@ -78,7 +78,6 @@ export default {
       currentTime: dayjs().format("YYYY. MM. DD. ddd"),
       currentTemp: "",
       hourlyDatas: [],
-      hourlyWeatherIconSrcs: [],
       temporaryData: [
         { title: "습도", value: "60%" },
         { title: "풍속", value: "10m/s" },
@@ -101,7 +100,7 @@ export default {
     this.temporaryData[0].value = currentHumidity + "%"; // 현재 습도
     this.temporaryData[1].value = currentWindSpeed + "m/s"; // 현재 풍속
     this.temporaryData[2].value = Math.round(currentFeelsLike) + "도"; // 현재 체감 온도
-    this.arrayTemps = this.$store.state.openWeatherAPI.hourlyWeather;
+    this.hourlyDatas = this.$store.state.openWeatherAPI.hourlyWeather;
     this.images = this.$store.state.openWeatherAPI.imagePath;
     this.currentWeatherIconCodeSrc = currentWeatherIconCodeSrc; // 현재 날씨 아이콘 route
   },
@@ -122,7 +121,7 @@ export default {
         this.$store.state.openWeatherAPI.currentWeather;
       return currentWeatherIconCodeSrc;
     },
-    arrayTemps() {
+    hourlyDatas() {
       return this.$store.state.openWeatherAPI.hourlyWeather;
     },
     // 상세 날씨 데이터를 받아주는 데이터 할당
@@ -146,8 +145,18 @@ export default {
     },
 
     // 시간별 날씨 데이터에 대한 아이콘 이미지
-    images() {
+    hourlyWeatherIconSrcs() {
       return this.$store.state.openWeatherAPI.images;
+    },
+  },
+  methods: {
+    // unixType 타임 변경 메서드
+    changeTimeFormatt(unixtime) {
+      const millisec = unixtime * 1000;
+      let date = new Date(millisec);
+      let hour = "" + date.getHours();
+      const formatted = hour.substring(-2).padStart(2, "0");
+      return formatted + " 시";
     },
   },
 };
