@@ -87,7 +87,6 @@ export default {
         const res = await axios.get(
           `https://api.openweathermap.org/data/3.0/onecall?lat=${initialLat}&lon=${initialLon}&exclude=minutely&appid=${API_KEY}&units=metric`
         );
-        console.log(res.data, "데이탓탓타!@!@!");
 
         let isInitialData = res.data.current;
         let isInitialCityName = res.data.timezone;
@@ -96,17 +95,27 @@ export default {
         let isTimeOfSunset = isInitialData.sunset;
         let isLineOfSight = isInitialData.visibility; // 가시거리
 
-        console.log(isFeelLikeTemp, "!@!@!@");
+        // response 데이터의 체감온도 넘버 값에 따라 UI에 문자열 데이터로 바꿔서 보여주기 위한 로직
+        const tempPoints = [0, 10, 15, 20, 25, 30];
+        const lavels = [
+          "매우 더움",
+          "더움",
+          "보통",
+          "시원함",
+          "약간 추움",
+          "추움",
+          "매우 추움",
+        ];
 
-        // response 데이터의 특정 값에 따라 상세 날씨 데이터 상태를 바꾸기 위한 조건문 분기처리
-        if (isFeelLikeTemp > 30) feeling.value = "매우 더움";
-        if (isFeelLikeTemp <= 30) feeling.value = "더움";
-        if (isFeelLikeTemp <= 25) feeling.value = "보통";
-        if (isFeelLikeTemp <= 20) feeling.value = "시원함";
-        if (isFeelLikeTemp <= 15) feeling.value = "약간추움";
-        if (isFeelLikeTemp <= 10) feeling.value = "추움";
-        if (isFeelLikeTemp <= 0) feeling.value = "매우 추움";
+        let idx = 0;
 
+        for (const point of tempPoints) {
+          if (isFeelLikeTemp <= point) break;
+          idx++;
+        }
+        feeling.value = lavels[idx];
+
+        // reponse 데이터 중 상세 날씨 데이터로 보여줄 값을 v-for 문에서 사용하기 쉽게 변환
         let isProcessedData = [
           { name: "일출시간", value: changeTimeFormatt(isTimeOfSunrise) },
           { name: "일몰시간", value: changeTimeFormatt(isTimeOfSunset) },
