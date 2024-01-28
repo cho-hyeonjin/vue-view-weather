@@ -15,7 +15,7 @@
       </div>
       <div class="weatherBox">
         <div class="airCondition">
-          <p>추움</p>
+          <p>{{ feeling }}</p>
         </div>
         <div class="detail">
           <div class="title">
@@ -91,10 +91,21 @@ export default {
 
         let isInitialData = res.data.current;
         let isInitialCityName = res.data.timezone;
-        let isFeelLikeTemp = isInitialData.feel_like; // 체감온도
+        let isFeelLikeTemp = isInitialData.feels_like; // 체감온도
         let isTimeOfSunrise = isInitialData.sunrise;
         let isTimeOfSunset = isInitialData.sunset;
         let isLineOfSight = isInitialData.visibility; // 가시거리
+
+        console.log(isFeelLikeTemp, "!@!@!@");
+
+        // response 데이터의 특정 값에 따라 상세 날씨 데이터 상태를 바꾸기 위한 조건문 분기처리
+        if (isFeelLikeTemp > 30) feeling.value = "매우 더움";
+        if (isFeelLikeTemp <= 30) feeling.value = "더움";
+        if (isFeelLikeTemp <= 25) feeling.value = "보통";
+        if (isFeelLikeTemp <= 20) feeling.value = "시원함";
+        if (isFeelLikeTemp <= 15) feeling.value = "약간추움";
+        if (isFeelLikeTemp <= 10) feeling.value = "추움";
+        if (isFeelLikeTemp <= 0) feeling.value = "매우 추움";
 
         let isProcessedData = [
           { name: "일출시간", value: changeTimeFormatt(isTimeOfSunrise) },
@@ -106,8 +117,8 @@ export default {
           },
         ];
 
-        cityName.value = isInitialCityName.split("/")[1];
-        feeling.value = Math.round(isFeelLikeTemp);
+        // 상단 헤더 도시명, 날짜 데이터
+        cityName.value = isInitialCityName.split("/")[1]; // composition api 방식 = data에 선언해둔 변수명.value 로 접근
         subWeatherDatas.value = isProcessedData;
       } catch (err) {
         console.log("😨 에러 발생", err);
@@ -218,7 +229,7 @@ export default {
         height: 35%;
 
         p {
-          font-size: 3rem;
+          font-size: 2.5rem;
           font-weight: 500;
           text-align: center;
           font-family: "Pretendard Variable", Pretendard, -apple-system,
@@ -237,6 +248,7 @@ export default {
           width: 100%;
           height: 25%;
           color: white;
+          font-weight: 400;
 
           p {
             font-family: "Pretendard Variable", Pretendard, -apple-system,
