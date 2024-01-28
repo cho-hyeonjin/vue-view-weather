@@ -15,7 +15,7 @@
       </div>
       <div class="weatherBox">
         <div class="airCondition">
-          <p>추움</p>
+          <p>{{ feeling }}</p>
         </div>
         <div class="detail">
           <div class="title">
@@ -87,15 +87,35 @@ export default {
         const res = await axios.get(
           `https://api.openweathermap.org/data/3.0/onecall?lat=${initialLat}&lon=${initialLon}&exclude=minutely&appid=${API_KEY}&units=metric`
         );
-        console.log(res.data, "데이탓탓타!@!@!");
 
         let isInitialData = res.data.current;
         let isInitialCityName = res.data.timezone;
-        let isFeelLikeTemp = isInitialData.feel_like; // 체감온도
+        let isFeelLikeTemp = isInitialData.feels_like; // 체감온도
         let isTimeOfSunrise = isInitialData.sunrise;
         let isTimeOfSunset = isInitialData.sunset;
         let isLineOfSight = isInitialData.visibility; // 가시거리
 
+        // response 데이터의 체감온도 넘버 값에 따라 UI에 문자열 데이터로 바꿔서 보여주기 위한 로직
+        const tempPoints = [0, 10, 15, 20, 25, 30];
+        const lavels = [
+          "매우 더움",
+          "더움",
+          "보통",
+          "시원함",
+          "약간 추움",
+          "추움",
+          "매우 추움",
+        ];
+
+        let idx = 0;
+
+        for (const point of tempPoints) {
+          if (isFeelLikeTemp <= point) break;
+          idx++;
+        }
+        feeling.value = lavels[idx];
+
+        // reponse 데이터 중 상세 날씨 데이터로 보여줄 값을 v-for 문에서 사용하기 쉽게 변환
         let isProcessedData = [
           { name: "일출시간", value: changeTimeFormatt(isTimeOfSunrise) },
           { name: "일몰시간", value: changeTimeFormatt(isTimeOfSunset) },
@@ -106,8 +126,8 @@ export default {
           },
         ];
 
-        cityName.value = isInitialCityName.split("/")[1];
-        feeling.value = Math.round(isFeelLikeTemp);
+        // 상단 헤더 도시명, 날짜 데이터
+        cityName.value = isInitialCityName.split("/")[1]; // composition api 방식 = data에 선언해둔 변수명.value 로 접근
         subWeatherDatas.value = isProcessedData;
       } catch (err) {
         console.log("😨 에러 발생", err);
@@ -218,7 +238,7 @@ export default {
         height: 35%;
 
         p {
-          font-size: 3rem;
+          font-size: 2.5rem;
           font-weight: 500;
           text-align: center;
           font-family: "Pretendard Variable", Pretendard, -apple-system,
@@ -237,6 +257,7 @@ export default {
           width: 100%;
           height: 25%;
           color: white;
+          font-weight: 400;
 
           p {
             font-family: "Pretendard Variable", Pretendard, -apple-system,
