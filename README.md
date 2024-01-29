@@ -1,5 +1,13 @@
 # 뷰뷰웨더🌦️
 
+### Vue.js 3를 이용한 날씨 애플리케이션🌦️
+
+과거에 사용했던 Vue.js 문법을 상기하는 차원에서 진행한 🧸토이 프로젝트입니다.
+
+Options API와 Composition API, Vuex를 사용했고 CSS는 Scss로 작성했습니다.
+
+API는 OpenWeather API와 kakao Maps API를 사용했습니다.
+
 <img src="https://github.com/cho-hyeonjin/vue-view-weather/assets/78816754/5d5348da-3ba1-4634-879c-474510aadb1d" width="30%"/>
 
 ## 🖼️ 애플리케이션 이미지
