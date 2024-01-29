@@ -9,7 +9,6 @@ module.exports = {
     alias: {
       "~": path.resolve(__dirname, "src"),
       assets: path.resolve(__dirname, "src/assets"),
-      icons: path.resolve(__dirname, "public/icons"),
     },
   },
   entry: "./src/main.js",
@@ -63,7 +62,7 @@ module.exports = {
       template: "./index.html",
     }),
     new CopyPlugin({
-      patterns: [{ from: "static" }],
+      patterns: [{ from: "static" }, { from: "public/icons", to: "icons" }],
     }),
     new VueLoaderPlugin(),
   ],
