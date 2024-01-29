@@ -18,12 +18,8 @@ API는 OpenWeather API와 kakao Maps API를 사용했습니다.
 
 1. `git clone https://github.com/cho-hyeonjin/vue-view-weather.git` 또는 `Download Zip` 으로 프로젝트 설치
 
-2. `cd vue-view-weather 경로` 로 프로젝트 디렉토리로 진입
+2. `cd vue-view-weather` 경로로 진입
 
 3. `npm install` 또는 `yarn` ( `yarn install` )
 
 4. `yarn serve`
-
-## 🖥️ 애플리케이션 사이트 방문
-
-[프로젝트 완료 후 첨부](#)
